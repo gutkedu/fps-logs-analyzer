@@ -1,4 +1,4 @@
-import { env } from '@/infra/env';
+import { env } from '@/app/env';
 import { Controller, Get } from '@nestjs/common';
 
 @Controller('health')
