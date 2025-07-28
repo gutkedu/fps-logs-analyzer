@@ -23,6 +23,7 @@ Na pasta ```docs/postman``` você encontra uma coleção do Postman com exemplos
 - EventEmitter para eventos assíncronos
 - Multer para upload de arquivos
 - Zod 
+- Vitest para testes unitários
 
 ### 🏗️ Como Executar 
 
@@ -55,3 +56,16 @@ O processamento dos arquivos de log é realizado de forma assíncrona utilizando
    **Arquivo:** `src/infra/http/controllers/global-player-ranking.controller.ts`, `src/infra/http/controllers/match-ranking.controller.ts`
 
 Esse padrão garante que o sistema seja responsivo e preparado para lidar com grandes volumes de dados ou múltiplos uploads simultâneos.
+
+
+## 🛠️ Testes
+
+Para executar os testes, utilize o comando:
+
+```bash
+npm run test:unit
+```
+
+O projeto utiliza o Vitest como framework de testes, com cobertura de testes configurada.
+
+Para os testes unitários, foram criados mocks de repositórios com implementações InMemory para simular o comportamento do banco de dados. Isso permite testar a lógica de negócios sem depender de uma instância real do banco de dados. Esses arquivos estão localizados na pasta `test/repositories`.
