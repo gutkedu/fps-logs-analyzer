@@ -1,98 +1,57 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# FPS Logs Analyzer
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Este projeto analisa logs de partidas de jogos FPS e gera estatísticas detalhadas de jogadores e partidas, utilizando Node.js e NestJS.
 
-## Description
+## Requisitos
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Para mais detalhes sobre os requisitos e funcionalidades, veja o arquivo `docs/specs.MD`.
 
-## Project setup
+### Principais Rotas 📡
 
-```bash
-$ npm install
-```
+- `GET /ranking` — Retorna o ranking global de jogadores. 
+- `GET /:externalId/ranking` — Retorna o ranking de uma partida específica. 
+- `POST /upload` — Realiza o upload de um arquivo de log para processamento. 
+- `GET /health` — Endpoint de verificação de saúde da aplicação. 
 
-## Compile and run the project
+Na pasta ```docs/postman``` você encontra uma coleção do Postman com exemplos de requisições para testar a API. 📨
+
+### 🛠️ Tecnologias Utilizadas 
+- Node.js
+- NestJS
+- Prisma ORM 
+- EventEmitter para eventos assíncronos
+- Multer para upload de arquivos
+- Zod 
+
+### 🏗️ Como Executar 
+
+obs: Certifique-se de ter o Docker e o Docker Compose instalados.
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+docker-compose up -d
 ```
 
-## Run tests
+O projeto por padrão configurado no docker-compose irá rodar no endereço 🌐 `http://localhost:3000`. 
 
-```bash
-# unit tests
-$ npm run test
+### ⚡ Decisão de Design: Processamento Assíncrono com Eventos 
 
-# e2e tests
-$ npm run test:e2e
+O processamento dos arquivos de log é realizado de forma assíncrona utilizando o padrão de eventos (EventEmitter). Essa abordagem traz os seguintes benefícios:
 
-# test coverage
-$ npm run test:cov
-```
+- **Desacoplamento**: O upload do arquivo e o processamento dos dados são separados, permitindo que a API responda rapidamente ao usuário e processe os dados em segundo plano. 
+- **Escalabilidade**: O uso de eventos facilita a extensão do sistema para múltiplos tipos de processamento ou integrações futuras (ex: notificações, persistência em diferentes bancos, etc). 
+- **Manutenção**: O fluxo de eventos torna o código mais modular, facilitando testes e manutenção. 
 
-## Deployment
+#### 🔀 Fluxo de Processamento 
+1. O usuário faz upload do arquivo de log via endpoint (`POST /upload`).  
+   **Arquivo:** `src/infra/http/controllers/logs.controller.ts`
+2. O serviço de upload dispara um evento interno indicando que um novo arquivo está disponível para processamento.  
+   **Arquivo:** `src/infra/events/event.service.ts`
+3. O worker de processamento escuta esse evento, lê o arquivo, interpreta os eventos do log e atualiza as entidades (jogadores, partidas, participações, frags) no banco de dados.  
+   **Arquivo:** `src/infra/workers/log-worker.service.ts` e `src/app/use-cases/process-match.use-case.ts`
+4. O processamento é realizado de forma assíncrona, sem bloquear a resposta ao usuário.  
+   **Arquivos envolvidos:** Todos acima, integrados via EventEmitter.
+5. Após o processamento, os dados ficam disponíveis para consulta via API.  
+   **Arquivo:** `src/infra/http/controllers/global-player-ranking.controller.ts`, `src/infra/http/controllers/match-ranking.controller.ts`
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Esse padrão garante que o sistema seja responsivo e preparado para lidar com grandes volumes de dados ou múltiplos uploads simultâneos.
