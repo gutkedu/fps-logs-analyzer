@@ -33,7 +33,21 @@ obs: Certifique-se de ter o Docker e o Docker Compose instalados.
 docker-compose up -d
 ```
 
+
 O projeto por padrão configurado no docker-compose irá rodar no endereço 🌐 `http://localhost:3000`. 
+
+## 🗄️ Entidades do Banco de Dados
+
+O sistema utiliza as seguintes entidades principais para persistência dos dados:
+
+- **Player**: Representa um jogador, armazenando nome e identificador único.
+- **Match**: Representa uma partida, com identificador externo, data de início e fim.
+- **MatchParticipation**: Relaciona um jogador a uma partida, armazenando frags, mortes, streaks, prêmios e estatísticas individuais.
+- **Frag**: Representa uma eliminação (frag) ocorrida na partida, incluindo quem matou, quem foi morto, arma utilizada e timestamp.
+
+Essas entidades estão modeladas no arquivo `prisma/schema.prisma` e são utilizadas para gerar as tabelas do banco de dados via Prisma ORM.
+
+O relacionamento entre elas permite calcular rankings, estatísticas globais e por partida, além de rastrear streaks e prêmios especiais.
 
 ### ⚡ Decisão de Design: Processamento Assíncrono com Eventos 
 
