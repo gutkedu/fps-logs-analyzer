@@ -18,7 +18,8 @@ de log que podem ser utilizados para testes.
 - `GET /health` — Endpoint de verificação de saúde da aplicação. 
   
 - `POST /upload` — Realiza o upload de um arquivo de log para processamento. 
-obs: Na pasta ```test/upload-files``` você encontra exemplos de arquivos 
+
+**obs: Na pasta ```test/upload-files``` você encontra exemplos de arquivos de log que podem ser utilizados para testes.**
 
 ### 🛠️ Tecnologias Utilizadas 
 - Node.js
