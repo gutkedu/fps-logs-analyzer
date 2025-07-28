@@ -7,14 +7,18 @@ Este projeto analisa logs de partidas de jogos FPS e gera estatísticas detalhad
 
 Para mais detalhes sobre os requisitos e funcionalidades, veja o arquivo `docs/specs.MD`.
 
-### Principais Rotas 📡
+### 📡 Rotas 
+Na pasta ```docs/postman``` você encontra uma coleção do Postman com exemplos de requisições para testar a API. 📨
 
 - `GET /ranking` — Retorna o ranking global de jogadores. 
+  
 - `GET /:externalId/ranking` — Retorna o ranking de uma partida específica. 
-- `POST /upload` — Realiza o upload de um arquivo de log para processamento. 
-- `GET /health` — Endpoint de verificação de saúde da aplicação. 
+de log que podem ser utilizados para testes.
 
-Na pasta ```docs/postman``` você encontra uma coleção do Postman com exemplos de requisições para testar a API. 📨
+- `GET /health` — Endpoint de verificação de saúde da aplicação. 
+  
+- `POST /upload` — Realiza o upload de um arquivo de log para processamento. 
+obs: Na pasta ```test/upload-files``` você encontra exemplos de arquivos 
 
 ### 🛠️ Tecnologias Utilizadas 
 - Node.js
