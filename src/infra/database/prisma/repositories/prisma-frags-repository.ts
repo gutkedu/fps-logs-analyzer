@@ -86,4 +86,20 @@ export class PrismaFragsRepository implements FragsRepository {
 
     return frags.map((frag) => PrismaFragMapper.toDomain(frag));
   }
+
+  async findManyWithoutWorld(matchId: string): Promise<Frag[]> {
+    const frags = await this.prisma.frag.findMany({
+      where: {
+        killerId: {
+          not: null,
+        },
+        matchId,
+      },
+      orderBy: {
+        killedAt: 'desc',
+      },
+    });
+
+    return frags.map((frag) => PrismaFragMapper.toDomain(frag));
+  }
 }

@@ -5,4 +5,5 @@ export interface FragsRepository {
   createMany(frags: Frag[]): Promise<void>;
   findById(fragId: string): Promise<Frag | null>;
   findMany(): Promise<Frag[]>;
+  findManyWithoutWorld(matchId: string): Promise<Frag[]>;
 }
