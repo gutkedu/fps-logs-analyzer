@@ -5,7 +5,6 @@ import { PrismaFragsRepository } from './prisma/repositories/prisma-frags-reposi
 import { PrismaMatchParticipationsRepository } from './prisma/repositories/prisma-match-participations-repository';
 import { PrismaService } from './prisma/prisma.service';
 
-// Using more descriptive tokens for better readability
 export const REPOSITORIES = {
   MATCHES_REPOSITORY: 'app.MatchesRepository',
   PLAYERS_REPOSITORY: 'app.PlayersRepository',

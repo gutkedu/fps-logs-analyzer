@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { HealthController } from './controllers/health.controller';
 import { LogsController } from './controllers/logs.controller';
+import { MatchRankingController } from './controllers/match-ranking.controller';
+
+import { UseCasesModule } from '@/app/use-cases/use-cases.module';
 
 @Module({
-  imports: [],
-  controllers: [HealthController, LogsController],
+  imports: [UseCasesModule],
+  controllers: [HealthController, LogsController, MatchRankingController],
 })
 export class HttpModule {}

@@ -2,9 +2,13 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from './infra/http/http.module';
 import { WorkersModule } from './infra/workers/workers.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     EventEmitterModule.forRoot({
       // Configure global event emitter here if needed
       wildcard: false,
