@@ -1,0 +1,4 @@
+export enum AwardType {
+  NO_DEATH_AWARD = 'NO_DEATH_AWARD',
+  SPEED_KILLER_AWARD = 'SPEED_KILLER_AWARD',
+}
