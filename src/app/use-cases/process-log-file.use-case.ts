@@ -11,9 +11,6 @@ export class ProcessLogFileUseCase {
 
   constructor(private eventEmitter: EventEmitter2) {}
 
-  /**
-   * Process log content
-   */
   execute(content: string): void {
     this.logger.log('Processing log content');
 

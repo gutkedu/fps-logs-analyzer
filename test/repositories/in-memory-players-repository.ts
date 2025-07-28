@@ -5,8 +5,9 @@ import { PlayersRepository } from '@/app/repositories/players-repository';
 export class InMemoryPlayersRepository implements PlayersRepository {
   public players: Player[] = [];
 
-  async create(player: Player): Promise<void> {
+  async create(player: Player): Promise<Player> {
     this.players.push(player);
+    return player;
   }
 
   async createMany(players: Player[]): Promise<void> {
