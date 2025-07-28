@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { FragsRepository } from '../repositories/frags-repository';
 import { MatchParticipationsRepository } from '../repositories/match-participations-repository';
 import { PlayersRepository } from '../repositories/players-repository';
+import { MatchesRepository } from '../repositories/matches-repository';
 
 export interface MatchRankingEntry {
   playerId: string;
@@ -24,7 +25,7 @@ export class GenerateMatchRankingUseCase {
     private readonly fragsRepository: FragsRepository,
     private readonly matchParticipationsRepository: MatchParticipationsRepository,
     private readonly playersRepository: PlayersRepository,
-    private readonly matchesRepository: import('../repositories/matches-repository').MatchesRepository,
+    private readonly matchesRepository: MatchesRepository,
   ) {}
 
   async execute(externalId: string): Promise<GenerateMatchRankingResponse> {
