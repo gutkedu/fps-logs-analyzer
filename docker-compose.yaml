@@ -9,14 +9,12 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - DATABASE_HOST=postgres
-      - DATABASE_PORT=5432
-      - DATABASE_NAME=fps_logs_analyzer
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres123
+      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/fps_logs_analyzer
     depends_on:
       postgres:
         condition: service_healthy
+    command: >
+      sh -c "npx prisma migrate deploy && node dist/main.js"
     restart: unless-stopped
     networks:
       - app-network

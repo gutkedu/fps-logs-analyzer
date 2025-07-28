@@ -9,6 +9,9 @@ COPY tsconfig*.json ./
 RUN npm i
 
 COPY src/ ./src/
+COPY prisma/ ./prisma/
+
+RUN npx prisma generate
 
 RUN npm run build
 
@@ -25,6 +28,9 @@ COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/prisma /usr/src/app/prisma
+COPY --from=builder /usr/src/app/node_modules/.prisma /usr/src/app/node_modules/.prisma
+COPY --from=builder /usr/src/app/node_modules/@prisma /usr/src/app/node_modules/@prisma
 
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 RUN chown -R appuser:appuser /usr/src/app
