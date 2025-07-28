@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Match {
+  id         String    @id
+  externalId String
+  startedAt  DateTime
+  endedAt    DateTime?
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  frags               Frag[]
+  matchParticipations MatchParticipation[]
+
+  @@map("matches")
+}
+
+model Player {
+  id        String   @id
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  // Relations
+  frags               Frag[]               @relation("Killer")
+  deaths              Frag[]               @relation("Victim")
+  matchParticipations MatchParticipation[]
+
+  @@map("players")
+}
+
+model Frag {
+  id            String   @id
+  matchId       String
+  killerId      String?
+  victimId      String
+  weapon        String
+  killedAt      DateTime
+  isFriendlyFire Boolean  @default(false)
+
+  // Relations
+  match  Match  @relation(fields: [matchId], references: [id])
+  killer Player? @relation("Killer", fields: [killerId], references: [id])
+  victim Player @relation("Victim", fields: [victimId], references: [id])
+
+  @@map("frags")
+}
+
+model MatchParticipation {
+  id            String   @id
+  matchId       String
+  playerId      String
+  team          String
+  frags         Int      @default(0)
+  deaths        Int      @default(0)
+  score         Int      @default(0)
+  longestStreak Int      @default(0)
+  currentStreak Int      @default(0)
+  awards        String   @default("[]") // Stored as JSON
+  joinedAt      DateTime
+
+  // Relations
+  match  Match  @relation(fields: [matchId], references: [id])
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@unique([matchId, playerId])
+  @@map("match_participations")
+}
