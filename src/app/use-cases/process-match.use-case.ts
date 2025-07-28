@@ -130,7 +130,6 @@ export class ProcessMatchUseCase {
           const { killer, victim, weapon } = event.data;
           if (!victim || !weapon) break;
 
-          // Process players
           let killerId: string | null = null;
           if (killer && killer !== '<WORLD>') {
             killerId = await this.getOrCreatePlayer(killer, playerMap);
@@ -138,6 +137,7 @@ export class ProcessMatchUseCase {
               match.id,
               killerId,
               matchParticipants,
+              { isKiller: true },
             );
           }
 
@@ -146,41 +146,43 @@ export class ProcessMatchUseCase {
             match.id,
             victimId,
             matchParticipants,
+            { isVictim: true },
           );
 
-          // Create frag
           const frag = new Frag({
             matchId: match.id,
             killerId: killerId,
             victimId: victimId,
             weapon: this.mapToWeaponType(weapon),
-            killedAt: new Date(event.timestamp),
           });
-
           frags.push(frag);
           break;
         }
+
         default:
-          this.logger.warn(
-            `Unknown action type: ${event.action} in match ${match.id}`,
-          );
+          this.logger.warn(`Unknown event action: ${event.action}`);
           break;
       }
     }
 
-    // Save all the frags at once for better performance
     if (frags.length > 0) {
-      await this.fragsRepository.createMany(frags);
-      this.logger.log(`Stored ${frags.length} frags for match ${match.id}`);
+      for (const frag of frags) {
+        await this.fragsRepository.create(frag);
+      }
+      this.logger.log(`Persisted ${frags.length} frags for match ${match.id}`);
     }
   }
 
-  private mapToWeaponType(weapon: string): WeaponType {
+  private mapToWeaponType(weapon: string | undefined): WeaponType {
+    if (!weapon) {
+      this.logger.warn(`Unknown weapon type: ${weapon}, defaulting to M16`);
+      return WeaponType.M16;
+    }
     if (Object.values(WeaponType).includes(weapon as WeaponType)) {
       return weapon as WeaponType;
     }
-    this.logger.warn(`Unknown weapon type: ${weapon}, defaulting to M16`);
-    return WeaponType.M16;
+    this.logger.warn(`Unknown weapon type: ${weapon}, defaulting to UNKNOWN`);
+    return WeaponType.UNKNOWN;
   }
 
   private async getOrCreatePlayer(
@@ -198,20 +200,21 @@ export class ProcessMatchUseCase {
       try {
         await this.playersRepository.create(player);
         this.logger.log(`Created new player: ${playerName}`);
-      } catch (err) {
+      } catch (error) {
+        // Handle unique constraint error (player already exists)
         if (
-          typeof err === 'object' &&
-          err !== null &&
-          'code' in err &&
+          typeof error === 'object' &&
+          error !== null &&
+          'code' in error &&
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          err.code === 'P2002'
+          error.code === 'P2002'
         ) {
           this.logger.warn(
-            `Player ${playerName} already exists, fetching from DB.`,
+            `Player with name '${playerName}' already exists. Fetching existing player.`,
           );
           player = await this.playersRepository.findByName(playerName);
         } else {
-          throw err;
+          throw error;
         }
       }
     }
@@ -228,21 +231,19 @@ export class ProcessMatchUseCase {
     matchId: string,
     playerId: string,
     participantSet: Set<string>,
+    update?: { isKiller?: boolean; isVictim?: boolean },
   ): Promise<void> {
     const key = `${matchId}-${playerId}`;
 
-    if (participantSet.has(key)) {
-      return;
-    }
-
-    const exists =
+    let participation =
       await this.matchParticipationsRepository.findByMatchIdAndPlayerId(
         matchId,
         playerId,
       );
 
-    if (!exists) {
-      const participation = new MatchParticipation({
+    let isNew = false;
+    if (!participation) {
+      participation = new MatchParticipation({
         matchId,
         playerId,
         team: 'unknown',
@@ -254,10 +255,30 @@ export class ProcessMatchUseCase {
         awards: [],
         joinedAt: new Date(),
       });
+      isNew = true;
+    }
 
+    let updated = false;
+    if (update?.isKiller) {
+      participation.addFrag();
+      updated = true;
+    }
+    if (update?.isVictim) {
+      participation.addDeath();
+      updated = true;
+    }
+
+    // TODO: update streaks, awards
+
+    if (isNew) {
       await this.matchParticipationsRepository.create(participation);
       this.logger.log(
         `Created match participation for player ${playerId} in match ${matchId}`,
+      );
+    } else if (updated) {
+      await this.matchParticipationsRepository.update(participation);
+      this.logger.log(
+        `Updated match participation for player ${playerId} in match ${matchId}`,
       );
     }
 

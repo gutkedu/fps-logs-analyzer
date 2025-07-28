@@ -11,6 +11,22 @@ export class InMemoryMatchParticipationsRepository
     this.participations.push(matchParticipation);
   }
 
+  async findMany(): Promise<MatchParticipation[]> {
+    return [...this.participations];
+  }
+
+  async update(matchParticipation: MatchParticipation): Promise<void> {
+    const index = this.participations.findIndex(
+      (item) => item.id === matchParticipation.id,
+    );
+
+    if (index === -1) {
+      throw new Error('MatchParticipation not found');
+    }
+
+    this.participations[index] = matchParticipation;
+  }
+
   async createMany(matchParticipations: MatchParticipation[]): Promise<void> {
     this.participations.push(...matchParticipations);
   }

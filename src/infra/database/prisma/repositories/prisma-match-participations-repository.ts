@@ -9,6 +9,23 @@ export class PrismaMatchParticipationsRepository
   implements MatchParticipationsRepository
 {
   constructor(private prisma: PrismaService) {}
+  async update(matchParticipation: MatchParticipation): Promise<void> {
+    const raw = PrismaMatchParticipationMapper.toPrisma(matchParticipation);
+
+    await this.prisma.matchParticipation.update({
+      where: {
+        id: raw.id,
+      },
+      data: raw,
+    });
+  }
+
+  async findMany(): Promise<MatchParticipation[]> {
+    const matchParticipations = await this.prisma.matchParticipation.findMany();
+    return matchParticipations.map((mp) =>
+      PrismaMatchParticipationMapper.toDomain(mp),
+    );
+  }
 
   async create(matchParticipation: MatchParticipation): Promise<void> {
     const raw = PrismaMatchParticipationMapper.toPrisma(matchParticipation);

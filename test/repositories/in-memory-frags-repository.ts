@@ -23,7 +23,11 @@ export class InMemoryFragsRepository implements FragsRepository {
     return frag;
   }
 
-  findMany(): Promise<Frag[]> {
+  async findManyWithoutWorld(matchId: string): Promise<Frag[]> {
+    return this.frags.filter((frag) => frag.matchId === matchId);
+  }
+
+  async findMany(): Promise<Frag[]> {
     return Promise.resolve(this.frags);
   }
 }

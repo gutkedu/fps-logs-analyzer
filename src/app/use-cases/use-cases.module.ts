@@ -8,6 +8,7 @@ import { PlayersRepository } from '@/app/repositories/players-repository';
 import { FragsRepository } from '@/app/repositories/frags-repository';
 import { MatchParticipationsRepository } from '@/app/repositories/match-participations-repository';
 import { REPOSITORIES } from '@/infra/database/database.module';
+import { GenerateGlobalPlayerRankingUseCase } from './generate-global-player-ranking.use-case';
 
 @Module({
   imports: [DatabaseModule],
@@ -55,11 +56,48 @@ import { REPOSITORIES } from '@/infra/database/database.module';
         REPOSITORIES.MATCHES_REPOSITORY,
       ],
     },
+    {
+      provide: GenerateGlobalPlayerRankingUseCase,
+      useFactory: (
+        fragsRepository: FragsRepository,
+        matchParticipationsRepository: MatchParticipationsRepository,
+        playersRepository: PlayersRepository,
+      ) =>
+        new GenerateGlobalPlayerRankingUseCase(
+          fragsRepository,
+          matchParticipationsRepository,
+          playersRepository,
+        ),
+      inject: [
+        REPOSITORIES.FRAGS_REPOSITORY,
+        REPOSITORIES.MATCH_PARTICIPATIONS_REPOSITORY,
+        REPOSITORIES.PLAYERS_REPOSITORY,
+      ],
+    },
+    {
+      provide: GenerateGlobalPlayerRankingUseCase,
+      useFactory: (
+        fragsRepository: FragsRepository,
+        matchParticipationsRepository: MatchParticipationsRepository,
+        playersRepository: PlayersRepository,
+      ) =>
+        new GenerateGlobalPlayerRankingUseCase(
+          fragsRepository,
+          matchParticipationsRepository,
+          playersRepository,
+        ),
+      inject: [
+        REPOSITORIES.FRAGS_REPOSITORY,
+        REPOSITORIES.MATCH_PARTICIPATIONS_REPOSITORY,
+        REPOSITORIES.PLAYERS_REPOSITORY,
+      ],
+    },
   ],
   exports: [
     ProcessLogFileUseCase,
     ProcessMatchUseCase,
     GenerateMatchRankingUseCase,
+    GenerateGlobalPlayerRankingUseCase,
   ],
 })
 export class UseCasesModule {}

@@ -10,4 +10,6 @@ export interface MatchParticipationsRepository {
     matchId: string,
     playerId: string,
   ): Promise<MatchParticipation | null>;
+  findMany(): Promise<MatchParticipation[]>;
+  update(matchParticipation: MatchParticipation): Promise<void>;
 }
