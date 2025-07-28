@@ -1,0 +1,129 @@
+{
+  "info": {
+    "name": "FPS Logs Analyzer API",
+    "description": "API collection for interacting with the FPS Logs Analyzer application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check the health status of the API"
+      },
+      "response": [
+        {
+          "name": "Health Check Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"status\": \"ok\",\n    \"timestamp\": \"2025-07-28T12:00:00.000Z\",\n    \"uptime\": 3600,\n    \"environment\": \"development\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Upload Log File",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/path/to/your/logfile.txt",
+              "description": "Log file to upload (must be a text file or have .txt extension)"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/logs/upload",
+          "host": ["{{baseUrl}}"],
+          "path": ["logs", "upload"]
+        },
+        "description": "Upload a log file for processing. The file must be either a text file (MIME type starts with 'text/') or have a .txt extension."
+      },
+      "response": [
+        {
+          "name": "Log Upload Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/your/logfile.txt"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/logs/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["logs", "upload"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"Log file uploaded and sent for processing\",\n    \"jobId\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"fileName\": \"logfile.txt\"\n}"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}
