@@ -197,26 +197,8 @@ export class ProcessMatchUseCase {
 
     if (!player) {
       player = new Player({ name: playerName });
-      try {
-        await this.playersRepository.create(player);
-        this.logger.log(`Created new player: ${playerName}`);
-      } catch (error) {
-        // Handle unique constraint error (player already exists)
-        if (
-          typeof error === 'object' &&
-          error !== null &&
-          'code' in error &&
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          error.code === 'P2002'
-        ) {
-          this.logger.warn(
-            `Player with name '${playerName}' already exists. Fetching existing player.`,
-          );
-          player = await this.playersRepository.findByName(playerName);
-        } else {
-          throw error;
-        }
-      }
+      player = await this.playersRepository.create(player);
+      this.logger.log(`Created new player: ${playerName}`);
     }
 
     if (!player) {
