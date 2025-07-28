@@ -13,15 +13,12 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     root: './',
-    include: ['src/**/*.spec.ts', 'test/**/*.e2e-spec.ts'],
+    include: ['src/**/*.spec.ts', 'test/**/*.spec.ts'],
     env: {
       NODE_ENV: 'test',
-      DATABASE_PASSWORD: 'postgres123',
-      TEST_DATABASE_HOST: 'localhost',
-      TEST_DATABASE_PORT: '5433',
-      TEST_DATABASE_NAME: 'fps_logs_analyzer_test',
-      TEST_DATABASE_USER: 'postgres',
-      TEST_DATABASE_PASSWORD: 'postgres123',
+      PORT: '3000',
+      DATABASE_URL:
+        'postgresql://postgres:postgres123@localhost:5433/fps_logs_analyzer_test',
     },
     coverage: {
       provider: 'v8',
